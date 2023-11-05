@@ -7,6 +7,9 @@
 
 #let sections = state("sections", ())
 
+#let license = sym.copyright
+#let author = [Lennart Schuster]
+
 #let currentSection(update: none) = {
   let newSec = []
   if update != none {
@@ -72,8 +75,12 @@
 
 #let slideFooter = {
   set text(font: "IBM Plex Mono SmBld", size: 10pt)
-  set align(right)
-  logic.logical-slide.display()
+  stack(dir: ltr,
+    [#set align(left); #license],
+    [#set align(center); #author],
+    // TODO: authors functions, that checks the space, if their is not enough space try to shorten the names by display only initials or combination, e.g L. Schuster, N. Loeser
+    [#set align(right); #logic.logical-slide.display()]
+  )
 }
 
 #let mancy(
@@ -90,7 +97,7 @@
   set text(
     font: "IBM Plex Sans",
     weight: "light", size: 20pt)
-
+  
   body
 }
 
