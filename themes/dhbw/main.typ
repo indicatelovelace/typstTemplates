@@ -33,13 +33,14 @@
   doc,
 )
 
-= asfd
+= Mustertitel
 
 #figure(
   image("pictures/University-logo.svg"),
-  caption: [alsjkdf asld]
+  caption: [Das DHBW Logo]
 ) <dhbw>
 
+#lorem(100)
 #figure(
   table(
   columns: (1fr, auto, auto),
@@ -57,14 +58,17 @@
   $ sqrt(2) / 12 a^3 $,
   [$a$: edge length]
   ),
-  caption: [asdf]
+  caption: [Eine Tabelle]
 ) <table>
 
+#lorem(100)
 #figure(
-  terms.item("sd", "afg"),
+  [
+    - Item 1
+    - Ein anderes Item
+  ],
   kind: "list",
   supplement: [List],
-  caption: "asdf"
+  caption: [Eine Liste]
 )
-
-#lorem(200)
+#lorem(100)

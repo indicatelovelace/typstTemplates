@@ -31,7 +31,7 @@
     lang: language,
     region: language,
     font: font,
-    size: font_size, // Weird font size to achieve about the same line length as with 12pt Arial in Word
+    size: font_size,
   )
   
   // Add some spacing between figures and caption
