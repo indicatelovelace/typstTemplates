@@ -21,8 +21,9 @@
   outlines: (
     ("List of figures", image),
     ("List of tables", table),
-    ("List of listings", "list")
+    ("List of listings", "list"),
   ),
+  equationTitle: "List of equations",
   thesis_type: "Bachelorarbeit/Studienarbeit/T2000 Projektarbeit",
   field_of_studies: "",
   company_logo: (path: "pictures/AirbusLogo.jpg", alternative_text: "Company Logo"),
@@ -38,7 +39,7 @@
 #figure(
   image("pictures/University-logo.svg"),
   caption: [Das DHBW Logo]
-) <dhbw>
+)
 
 #lorem(100)
 #figure(
@@ -59,7 +60,9 @@
   [$a$: edge length]
   ),
   caption: [Eine Tabelle]
-) <table>
+)
+
+$ sum_(i=0)^n a_i = 2^(1+i) $
 
 #lorem(100)
 #figure(

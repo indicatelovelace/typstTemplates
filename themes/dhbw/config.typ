@@ -4,9 +4,10 @@
   university: none,
   abstract: [],
   language: "de", // enable language-specific quotes with ISO 639-1/2/3 language code.
-  font: "IBM Plex Sans",
+  font: "IBM Plex Serif",
   font_size: 12pt,
   outlines: ((none, none),),
+  equationTitle: none,
   thesis_type: none,
   course: none,
   field_of_studies: none,
@@ -38,7 +39,7 @@
   set figure(
     gap: 1em
   )
-  
+
   // Add numbering to equations
   set math.equation(numbering: "(1)")
   
@@ -205,6 +206,22 @@
     })
   }
 
+  let print_outline_if_equation_exists(title) = {
+    locate(loc => {
+      let elems = query(math.equation.where(block: true), loc)
+      let count = elems.len()
+      if count > 0 and title != none {
+        par(first-line-indent: 0em, leading: 1em)[
+          #heading(level: 1, numbering: none)[#title]
+          #outline(
+            title: none,
+            target: math.equation.where(block: true),
+          )
+        ]
+      }
+    })
+  }
+
   // Outline / Table of contents
   par(first-line-indent: 0em, leading: 1em)[
     #outline(depth: 3, indent: true)
@@ -213,6 +230,8 @@
   for (name, kind) in outlines {
     print_outline_if_content_exists(name, kind)
   }
+
+  print_outline_if_equation_exists(equationTitle)
 
   //===========================================================================
   // Abstract
