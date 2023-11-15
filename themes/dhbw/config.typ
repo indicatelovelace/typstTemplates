@@ -1,21 +1,30 @@
+#import "@preview/glossarium:0.2.3" : make-glossary, print-glossary
+#show: make-glossary
+
 #let conf(
   title: none,
   authors: (),
   university: none,
   abstract: [],
+  appendixTitle: none,
+  appendix: [],
+  glossaryTitle: none, 
+  glossary: (),
   language: "de", // enable language-specific quotes with ISO 639-1/2/3 language code.
   font: "IBM Plex Serif",
-  font_size: 12pt,
+  fontSize: 12pt,
   outlines: ((none, none),),
   equationTitle: none,
-  thesis_type: none,
+  equationShort: none,
+  thesisType: none,
   course: none,
-  field_of_studies: none,
-  company_logo: (path: none, alternative_text: none),
-  university_logo: (path: none, alternative_text: none),
-  bibliography-file: none,
-  bibliography-style: "ieee",
-  declaration_on_honour: true,
+  courseShort: none,
+  fieldOfStudies: none,
+  companyLogo: (path: none, alternativeText: none),
+  universityLogo: (path: none, alternativeText: none),
+  bibliographyFiles: [],
+  bibliographyStyle: "ieee",
+  declarationOnHonour: true,
   doc,
 ) = {
   //===========================================================================
@@ -32,7 +41,7 @@
     lang: language,
     region: language,
     font: font,
-    size: font_size,
+    size: fontSize,
   )
   
   // Add some spacing between figures and caption
@@ -41,7 +50,7 @@
   )
 
   // Add numbering to equations
-  set math.equation(numbering: "(1)")
+  set math.equation(numbering: "(1)", supplement: equationShort)
   
   // leading is line spacing
   set par(first-line-indent: 1em, leading: 1.5em)
@@ -108,12 +117,12 @@
   // Print company and / or university logo, if given
   grid(
     columns: (30%, 40%, 30%),
-    if company_logo.path != none and company_logo.path != "" {
-      image(company_logo.path, width: 100%)
+    if companyLogo.path != none and companyLogo.path != "" {
+      image(companyLogo.path, width: 100%)
     },
     [],
-    if university_logo.path != none and university_logo.path != "" {
-      image(university_logo.path, width: 100%)
+    if universityLogo.path != none and universityLogo.path != "" {
+      image(universityLogo.path, width: 100%)
     }
   )
 
@@ -123,9 +132,9 @@
     #v(3em)
     #text(size: 14pt, title )
     #v(4em)
-    #text(weight: "bold", upper(thesis_type)) \
+    #text(weight: "bold", upper(thesisType)) \
     #v(11em)
-    #if language == "de" [des Studiengangs] else [of the degree programm] #text(author.course_name, weight: "bold")
+    #if language == "de" [des Studiengangs] else [of the degree programm] #text(author.courseName, weight: "bold")
 
     #if language == "de" [an der ] else [at the] #university
     #v(4em)
@@ -135,7 +144,7 @@
     #text(author.name, weight: "bold")
 
     #v(4em)
-    #author.submission_date
+    #author.submissionDate
   ])
 
   align(bottom + left, [
@@ -143,12 +152,12 @@
       columns: (50%, 50%),
       align: (x, y) => (left, left).at(x),
       stroke: none,
-//      if author.submission_date != none [#if language == "de" [Eingereicht am:] else [Submission date:]], [#author.submission_date],
+//      if author.submissionDate != none [#if language == "de" [Eingereicht am:] else [Submission date:]], [#author.submissionDate],
     //  if author.department != none [#if language == "de" [Abteilung:] else [Department:]], [#author.department],
     if author.period != none [#if language == "de" [Bearbeitungszeitraum:] else [Editing period:]], [#author.period],
-    if author.matriculation_number != none and author.course_abbr != none [#if language == "de" [Matrikelnummer, Kurs:] else [Matriculation number, Course:]], [#author.matriculation_number, #author.course_abbr],
+    if author.matriculationNumber != none and author.courseShort != none [#if language == "de" [Matrikelnummer, Kurs:] else [Matriculation number, Course:]], [#author.matriculationNumber, #author.courseShort],
     if author.company != none [#if language == "de" [Firma:] else [Company:]], [#author.company],
-    if author.company_advisor != none [#if language == "de" [Betreuer der Ausbildungsfirma:] else [Company Advisor:]], [#author.company_advisor],
+    if author.companyAdvisor != none [#if language == "de" [Betreuer der Ausbildungsfirma:] else [Company Advisor:]], [#author.companyAdvisor],
     if author.evaluator != none [#if language == "de" [Gutachter der Dualen Hochschule:] else [Evaluator of the University:]], [#author.evaluator],
     )
   ])
@@ -160,7 +169,7 @@
   //===========================================================================
   // Declaration of honour
   //===========================================================================
-  if declaration_on_honour {
+  if declarationOnHonour {
     heading(level: 1, outlined: false, numbering: none)[
       #if language == "de" [Ehrenwörtliche Erklärung] else [Declaration on honour]
     ]
@@ -190,7 +199,7 @@
   //===========================================================================
 
   // Prints the outline for figures with given name only if at least one item of that kind exists
-  let print_outline_if_content_exists(title, kind) = {
+  let printOutlineIfContentExists(title, kind) = {
     locate(loc => {
       let elems = query(figure.where(kind: kind), loc)
       let count = elems.len()
@@ -206,7 +215,7 @@
     })
   }
 
-  let print_outline_if_equation_exists(title) = {
+  let printOutlineIfEquationExists(title) = {
     locate(loc => {
       let elems = query(math.equation.where(block: true), loc)
       let count = elems.len()
@@ -228,10 +237,18 @@
   ]
 
   for (name, kind) in outlines {
-    print_outline_if_content_exists(name, kind)
+    printOutlineIfContentExists(name, kind)
   }
 
-  print_outline_if_equation_exists(equationTitle)
+  printOutlineIfEquationExists(equationTitle)
+
+  //===========================================================================
+  // Glossarium
+  //===========================================================================
+
+  heading(supplement: glossaryTitle, numbering: none, glossaryTitle)
+  print-glossary(glossary)
+  pagebreak(weak: true)
 
   //===========================================================================
   // Abstract
@@ -244,7 +261,6 @@
       #abstract
     ]
   }
-
   //===========================================================================
   // Content
   //===========================================================================
@@ -255,4 +271,14 @@
 
   // Display paper content
   doc
+
+
+  //===========================================================================
+  // Bibliography
+  //===========================================================================
+  
+  pagebreak(weak: true)
+  if bibliographyFiles.len() > 0 {
+    bibliography(full: true, bibliographyFiles)
+  }
 }
