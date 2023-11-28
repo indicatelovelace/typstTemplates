@@ -1,4 +1,6 @@
 #import "@preview/glossarium:0.2.3" : make-glossary, print-glossary
+#import "@preview/drafting:0.1.1": *
+#import "./utils.typ": reduceAuthors
 #show: make-glossary
 
 #let conf(
@@ -25,6 +27,7 @@
   bibliographyFiles: [],
   bibliographyStyle: "ieee",
   declarationOnHonour: true,
+  draft: true,
   doc,
 ) = {
   //===========================================================================
@@ -108,11 +111,24 @@
   }
 
   //===========================================================================
+  // Draft
+  //===========================================================================
+
+  if draft == true {
+    set-page-properties(margin-left: 2.5cm, margin-right: 2.5cm)
+  }
+
+  //===========================================================================
   // Titlepage
   //===========================================================================
 
   // Template supports only one author, as it is made for a bachelor thesis!
-  let author = authors.first()
+  let author
+  if authors.len() > 1 {
+    author = reduceAuthors(authors)
+  } else {
+    author = authors.first()
+  }
 
   // Print company and / or university logo, if given
   grid(
@@ -127,7 +143,8 @@
   )
 
   // Print author and university information
-  align(center, [
+  text(hyphenate: false)[
+  #align(center, [
     //#v(2%)
     #v(3em)
     #text(size: 14pt, title )
@@ -147,20 +164,18 @@
     #author.submissionDate
   ])
 
-  align(bottom + left, [
+  #align(bottom + left, [
     #table(
       columns: (50%, 50%),
       align: (x, y) => (left, left).at(x),
       stroke: none,
-//      if author.submissionDate != none [#if language == "de" [Eingereicht am:] else [Submission date:]], [#author.submissionDate],
-    //  if author.department != none [#if language == "de" [Abteilung:] else [Department:]], [#author.department],
     if author.period != none [#if language == "de" [Bearbeitungszeitraum:] else [Editing period:]], [#author.period],
     if author.matriculationNumber != none and author.courseShort != none [#if language == "de" [Matrikelnummer, Kurs:] else [Matriculation number, Course:]], [#author.matriculationNumber, #author.courseShort],
     if author.company != none [#if language == "de" [Firma:] else [Company:]], [#author.company],
     if author.companyAdvisor != none [#if language == "de" [Betreuer der Ausbildungsfirma:] else [Company Advisor:]], [#author.companyAdvisor],
     if author.evaluator != none [#if language == "de" [Gutachter der Dualen Hochschule:] else [Evaluator of the University:]], [#author.evaluator],
     )
-  ])
+  ])]
 
   // Enable page numbers starting by declatation on honour, with roman numbering
   counter(page).update(0)

@@ -17,6 +17,17 @@
       period: [#datetime.today(offset: -50).display() - #datetime.today(offset: -1).display()],
       submissionDate: datetime.today().display(),
     ),
+    (
+      name: "Max Mustermann",
+      company: "Musterfirma",
+      matriculationNumber: 1234567,
+      courseShort: "MusterKursKürzel",
+      courseName: "Musterkursname",
+      evaluator: "Prof. Dr. Max Musterprofessor",
+      companyAdvisor: "Max Musterberater",
+      period: [#datetime.today(offset: -50).display() - #datetime.today(offset: -1).display()],
+      submissionDate: datetime.today().display(),
+    ),
   ),
   font: "IBM Plex Serif",
   outlines: (
