@@ -2,34 +2,40 @@
 #show: make-glossary
 
 #let conf(
+  // TITLEPAGE
   title: none,
-  authors: (),
-  university: none,
-  abstract: [],
-  appendixTitle: none,
-  appendix: [],
-  glossaryTitle: none, 
-  glossary: (),
-  language: "de", // enable language-specific quotes with ISO 639-1/2/3 language code.
-  font: "IBM Plex Serif",
-  fontSize: 12pt,
-  outlines: ((none, none),),
-  equationTitle: none,
-  equationShort: none,
-  thesisType: none,
-  course: none,
-  courseShort: none,
-  fieldOfStudies: none,
+  authors: (), /*
+   author is an array of whitespace seperated strings, names are inerpreted as follows:
+  "$forename [$middlename]{n} $lastname, $app", so e.g. Robert James Oppenheimer, Jr. 
+  */
+  authorFormat: "f", // see utils for format options
+  thesisType: none, // e.g Bachelor Thesis
+  course: none, // e.g. Informationstechnik
+  courseShort: none, // e.g TIT20
+  fieldOfStudies: none, // e.g. Technical Computer Science
   companyLogo: (path: none, alternativeText: none),
   universityLogo: (path: none, alternativeText: none),
+  university: none, // e.g. DHBW Ravensburg
+
+  abstractTitle: none, // No abstract if none
+  abstract: [],
+  appendixTitle: none, // No appendix if none
+  appendix: [],
+  glossaryTitle: none, // No glossary if none
+  glossary: [], // the user is expected to create their own glossarium
+  bibliographyTitle: none, // No bibliography if none
   bibliographyFiles: [],
   bibliographyStyle: "ieee",
   declarationOnHonour: true,
   doc,
+  language: "de", // enable language-specific quotes with ISO 639-1/2/3 language code
+  font: "IBM Plex Serif",
+  fontSize: 12pt,
+  outlines: ((none, none),), // e.g. (table, "List of Tables") in the submitted order
+  equationTitle: none, // no equation table if none, equations are not a regular figure, only block equations are listed
+  equationSupplement: none, // no eqution supplement if none
+  
 ) = {
-  //===========================================================================
-  // Layout configuration
-  //===========================================================================
   
   set page(
     paper: "a4",
@@ -50,7 +56,11 @@
   )
 
   // Add numbering to equations
-  set math.equation(numbering: "(1)", supplement: equationShort)
+  if equationSupplement != none {
+    set math.equation(numbering: "(1)", supplement: equationSupplement)
+  } else {
+    set math.equation(numbering: none, supplement: none)
+  }
   
   // leading is line spacing
   set par(first-line-indent: 1em, leading: 1.5em)
@@ -106,10 +116,6 @@
     // Some spacing below the heading
     v(size / 2, weak: false)
   }
-
-  //===========================================================================
-  // Titlepage
-  //===========================================================================
 
   // Template supports only one author, as it is made for a bachelor thesis!
   let author = authors.first()
@@ -199,7 +205,7 @@
   //===========================================================================
 
   // Prints the outline for figures with given name only if at least one item of that kind exists
-  let printOutlineIfContentExists(title, kind) = {
+  let printOutlineIfContentExists(title, kind, function) = {
     locate(loc => {
       let elems = query(figure.where(kind: kind), loc)
       let count = elems.len()
@@ -272,13 +278,8 @@
   // Display paper content
   doc
 
-
-  //===========================================================================
-  // Bibliography
-  //===========================================================================
-  
   pagebreak(weak: true)
-  if bibliographyFiles.len() > 0 {
-    bibliography(full: true, bibliographyFiles)
+  if bibliographyFiles.len() > 0 and bibliographyTitle != none {
+    bibliography(title: bibliographyTitle, full: true, bibliographyFiles)
   }
 }

@@ -18,14 +18,23 @@
 // fS R. J. Oppenheimer
 // s R. J. Oppenheimer
 // oL Oppenheimer
-//#let authorFormat(seperator: " ,", format: f, company: true, authors) = {
-//  first = authors.first()
-//  arr = authors.slice(1, authors.len() - 1)
-//  arr.fold(first, 
-//  )
-//}
-//
-//#let _authorCases(format: f, author) {
-//  if format == f author.name
-//  else if format == fMS author.name
-//}
+#let authorFormat(seperator: " ,", format: "f", company: true, authors) = {
+ first = authors.first()
+ arr = authors.slice(1, authors.len() - 1)
+ arr.fold(first, 
+ )
+}
+
+#let _authorCases(format: "f", author: ()) = {
+  if format == "f" {
+    
+  } else if format == "fMS" {
+
+  } else if format == "fS" {
+
+  } else if format == "fS" {
+
+  } else if format == "oL" {
+
+  }
+}

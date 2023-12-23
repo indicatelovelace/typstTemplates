@@ -1,5 +1,5 @@
 #import "@preview/glossarium:0.2.3" : gls, glspl
-#import "config.typ": conf
+#import "/themes/dhbw/config.typ": conf
 #show: doc => conf(
   // Document Information
   title: "Title",
@@ -14,7 +14,7 @@
       courseName: "Musterkursname",
       evaluator: "Prof. Dr. Max Musterprofessor",
       companyAdvisor: "Max Musterberater",
-      period: [#datetime.today(offset: -50).display() - #datetime.today(offset: -1).display()],
+      period: [#datetime.today(offset: 0).display() - #datetime.today(offset: -1).display()],
       submissionDate: datetime.today().display(),
     ),
   ),
@@ -49,7 +49,7 @@
 = Mustertitel
 
 #figure(
-  image("pictures/University-logo.svg"),
+  image("pics/dhbwLogo.svg"),
   caption: [Das DHBW Logo]
 ) \
 #lorem(100) \
