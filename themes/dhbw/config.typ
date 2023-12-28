@@ -1,29 +1,25 @@
 #import "@preview/drafting:0.1.1": *
-#import "./utils.typ": reduceAuthors
+#import "./utils.typ": authorMetadata, flattenAuthorMetadata
 
 #let conf(
-  // TITLEPAGE
   title: none,
   authors: (), /*
-   author is an array of whitespace seperated strings, names are inerpreted as follows:
-  "$forename [$middlename]{n} $lastname, $app", so e.g. Robert James Oppenheimer, Jr. 
+   author is an array of dicts. The only key that is necessary is "name".
+  Any other property supplied is printed at the bottom end of the page, as per the guidelines, in the format "#key: #value", in the given order. For multiple authors, this data is collected, deduplicated, and either displayed as per usual or, if possible, listed as line seperated values.
   */
-  authorFormat: "f", // see utils for format options
+  courseName: none,
+  submissionDate: datetime.today().display(), // expects content, not a datetime, so use .display()
   thesisType: none, // e.g Bachelor Thesis
-  course: none, // e.g. Informationstechnik
-  courseShort: none, // e.g TIT20
-  fieldOfStudies: none, // e.g. Technical Computer Science
-  companyLogo: (path: none, alternativeText: none),
-  universityLogo: (path: none, alternativeText: none),
+  companyLogo: [], // expects any content, e.g. an image
+  universityLogo: [],
   university: none, // e.g. DHBW Ravensburg
 
   abstractTitle: none, // No abstract if none
-  abstract: [],
-  appendixTitle: none, // No appendix if none
-  appendix: [],
-  glossary: [], // the user is expected to create their own glossarium, with a package of their choice, no glossarium if none
+  abstract: none,
+  appendix: none, // no appendix if none
+  glossary: none, // the user is expected to create their own glossarium, with a package of their choice, or by hand. This can of course also include an list of symbols etc. No glossarium is printed if none
   bibliographyTitle: none, // No bibliography if none
-  bibliographyFiles: [],
+  bibliographyFiles: (),
   bibliographyStyle: "ieee",
   declarationOnHonour: true,
   draft: true,
@@ -36,12 +32,31 @@
   
   doc,
 ) = {
+  let author = authorMetadata(authors)
+  let name = author.remove("name").join(", ")
   
   set page(
     paper: "a4",
     number-align: right,
-    margin: (rest: 2.5cm)
-  )
+    margin: (rest: 2.5cm),
+    header: [
+    #locate(loc => {
+      let head = query(selector(heading).after(loc), loc).find(h => {
+       h.location().page() == loc.page() and h.level == 1
+      })
+      if (head != none) {
+      } else {
+        let l1h = query(selector(heading).before(loc), loc).filter(headIt => {
+          headIt.level == 1
+        })
+        let oldHead = if l1h != () {l1h.last().body} else {[]}
+        let count = counter(heading.where(level: 1)).display()
+        set align(right)
+        set text(font: "Linux Libertine")
+        smallcaps[#count #oldHead]
+      }
+    })
+  ])
   
   set text(
     lang: language,
@@ -52,8 +67,14 @@
   
   // Add some spacing between figures and caption
   set figure(
-    gap: 1em
+    gap: 1.2em
   )
+
+  show figure: it => {
+    v(0.5em)
+    it
+    v(0.5em)
+  }
 
   // Add numbering to equations
   if equationSupplement != none {
@@ -67,6 +88,8 @@
   
   // Configure headings.
   set heading(numbering: "1.1")
+
+
   
   show heading: it => {
     let first = true;
@@ -82,9 +105,6 @@
     if (it.level == 1) {
       size = 1.5em
       locate(loc => {
-        // Pagebreak for all except the first numbered headline
-        // The first numbered headline receives the pagebreak
-        // implicit via page counter update (I guess?)
         let levels = counter(heading).at(loc)
         if levels != (1,) {
           pagebreak(weak: true)
@@ -97,7 +117,7 @@
     } else {
       style = "italic"
     }
-  
+
     // Apply styling defined in the condition above
     set text(size: size, style: style)
   
@@ -120,27 +140,16 @@
     set-page-properties(margin-left: 2.5cm, margin-right: 2.5cm)
   }
 
-  //===========================================================================
-  // Titlepage
-  //===========================================================================
-
-  // Template supports only one author, as it is made for a bachelor thesis!
-  let author
-  if authors.len() > 1 {
-    author = reduceAuthors(authors)
-  } else {
-    author = authors.first()
-  }
-
   // Print company and / or university logo, if given
   grid(
     columns: (30%, 40%, 30%),
-    if companyLogo.path != none and companyLogo.path != "" {
-      image(companyLogo.path, width: 100%)
+    //rows: (), TODO
+    if companyLogo != none {
+      companyLogo
     },
     [],
-    if universityLogo.path != none and universityLogo.path != "" {
-      image(universityLogo.path, width: 100%)
+    if universityLogo != none {
+      universityLogo
     }
   )
 
@@ -153,17 +162,17 @@
     #v(4em)
     #text(weight: "bold", upper(thesisType)) \
     #v(11em)
-    #if language == "de" [des Studiengangs] else [of the degree programm] #text(author.courseName, weight: "bold")
+    #if language == "de" [des Studiengangs] else [of the degree programm] #text(courseName, weight: "bold")
 
     #if language == "de" [an der ] else [at the] #university
     #v(4em)
-    by
+    #if language == "de" [von] else [by]
 
     #v(1em)
-    #text(author.name, weight: "bold")
+    #text(name, weight: "bold")
 
     #v(4em)
-    #author.submissionDate
+    #submissionDate
   ])
 
   #align(bottom + left, [
@@ -171,11 +180,7 @@
       columns: (50%, 50%),
       align: (x, y) => (left, left).at(x),
       stroke: none,
-    if author.period != none [#if language == "de" [Bearbeitungszeitraum:] else [Editing period:]], [#author.period],
-    if author.matriculationNumber != none and author.courseShort != none [#if language == "de" [Matrikelnummer, Kurs:] else [Matriculation number, Course:]], [#author.matriculationNumber, #author.courseShort],
-    if author.company != none [#if language == "de" [Firma:] else [Company:]], [#author.company],
-    if author.companyAdvisor != none [#if language == "de" [Betreuer der Ausbildungsfirma:] else [Company Advisor:]], [#author.companyAdvisor],
-    if author.evaluator != none [#if language == "de" [Gutachter der Dualen Hochschule:] else [Evaluator of the University:]], [#author.evaluator],
+      ..flattenAuthorMetadata(dict: author)
     )
   ])]
 
@@ -183,9 +188,6 @@
   counter(page).update(0)
   set page(numbering: "I")
 
-  //===========================================================================
-  // Declaration of honour
-  //===========================================================================
   if declarationOnHonour {
     heading(level: 1, outlined: false, numbering: none)[
       #if language == "de" [Ehrenwörtliche Erklärung] else [Declaration on honour]
@@ -205,18 +207,14 @@
 
     grid(
       columns: (auto, 1fr, auto),
-      if language == "de" [OrEditing period:t, Datum] else [Location, Date],
+      if language == "de" [Ort, Datum] else [Location, Date],
       [],
-      [#author.name]
+      [name]
     )
   }
 
-  //===========================================================================
-  // Registers / Outlines
-  //===========================================================================
-
   // Prints the outline for figures with given name only if at least one item of that kind exists
-  let printOutlineIfContentExists(title, kind, function) = {
+  let printOutlineIfContentExists(title, kind) = {
     locate(loc => {
       let elems = query(figure.where(kind: kind), loc)
       let count = elems.len()
@@ -232,6 +230,7 @@
     })
   }
 
+  // Outlines for equations
   let printOutlineIfEquationExists(title) = {
     locate(loc => {
       let elems = query(math.equation.where(block: true), loc)
@@ -248,6 +247,13 @@
     })
   }
 
+  if abstractTitle != none {
+    par(first-line-indent: 0em)[
+      #heading(level: 1, outlined: false, numbering: none)[#abstractTitle]
+      #abstract
+    ]
+  }
+
   // Outline / Table of contents
   par(first-line-indent: 0em, leading: 1em)[
     #outline(depth: 3, indent: true)
@@ -261,14 +267,6 @@
 
   glossary
 
-  // Print only non empty abstract
-  if abstract != none and abstract != "" {
-    par(first-line-indent: 0em)[
-      #heading(level: 1, outlined: false, numbering: none)[Abstract]
-      #abstract
-    ]
-  }
-
   // Use arabic numbering for content
   set page(numbering: "1")
   counter(page).update(1)
@@ -279,5 +277,17 @@
   pagebreak(weak: true)
   if bibliographyFiles.len() > 0 and bibliographyTitle != none {
     bibliography(title: bibliographyTitle, full: true, bibliographyFiles)
+  }
+
+  if appendix != none {
+    counter(heading).update(0)
+    show heading: it => {
+      if it.level > 1 {
+        set heading(outlined: false, supplement: none)
+      }
+      set heading(numbering: "A.1")
+      it
+    }
+    appendix
   }
 }

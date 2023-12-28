@@ -13,23 +13,31 @@
   })
 }
 
-// format is one of:
-// f Robert James Oppenheimer
-// fMS Robert J. Oppenheimer
-// fS R. J. Oppenheimer
-// s R. J. Oppenheimer
-// oL Oppenheimer
-//#let authorFormat(seperator: " ,", format: f, company: true, authors) = {
-//  first = authors.first()
-//  arr = authors.slice(1, authors.len() - 1)
-//  arr.fold(first, 
-//  )
-//}
-//
-//#let _authorCases(format: f, author) {
-//  if format == f author.name
-//  else if format == fMS author.name
-//}
+// (name: Gustav Grönberg, number: 4532, class: A1)
+// (name: Simon Grönberg, number: 3332, class: A1, lead: Simon Grönberg)
+// (name: [Gustav Grönberg, Simon Grönberg], number: (4532, 3332), class: (A1, A1), lead: (Simon Grönberg))
+#let authorMetadata(authors) = {
+  let commonKeys = authors.fold((:), (dic, auth) => {
+    for (key, value) in auth {
+      dic.insert(key, dic.at(key, default: ()) + (value,))
+    }
+    dic
+  })
+  commonKeys
+}
+
+#let flattenAuthorMetadata(dict: (:)) = {
+  let metadata = dict.pairs().map(pair => {
+    let key = pair.at(1).dedup()
+    (strong(pair.at(0)), key.at(0)) + key.slice(1).map(it => {
+      if it != none {
+        ([], it)
+      }
+      }).flatten()
+  })
+  metadata.flatten()
+}
+
 
 #let reduceAuthors(authors) = {
   authors = authors.sorted(key: author => author.name)
