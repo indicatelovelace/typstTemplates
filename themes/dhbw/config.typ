@@ -39,24 +39,7 @@
     paper: "a4",
     number-align: right,
     margin: (rest: 2.5cm),
-    header: [
-    #locate(loc => {
-      let head = query(selector(heading).after(loc), loc).find(h => {
-       h.location().page() == loc.page() and h.level == 1
-      })
-      if (head != none) {
-      } else {
-        let l1h = query(selector(heading).before(loc), loc).filter(headIt => {
-          headIt.level == 1
-        })
-        let oldHead = if l1h != () {l1h.last().body} else {[]}
-        let count = counter(heading.where(level: 1)).display()
-        set align(right)
-        set text(font: "Linux Libertine")
-        smallcaps[#count #oldHead]
-      }
-    })
-  ])
+  )
   
   set text(
     lang: language,
@@ -89,8 +72,6 @@
   // Configure headings.
   set heading(numbering: "1.1")
 
-
-  
   show heading: it => {
     let first = true;
     // Don't indent headings
@@ -162,7 +143,7 @@
     #v(4em)
     #text(weight: "bold", upper(thesisType)) \
     #v(11em)
-    #if language == "de" [des Studiengangs] else [of the degree programm] #text(courseName, weight: "bold")
+    #if courseName != none [#if language == "de" [des Studiengangs] else [of the degree programm] #text(courseName, weight: "bold")]
 
     #if language == "de" [an der ] else [at the] #university
     #v(4em)
@@ -209,7 +190,7 @@
       columns: (auto, 1fr, auto),
       if language == "de" [Ort, Datum] else [Location, Date],
       [],
-      [name]
+      [#name]
     )
   }
 
@@ -246,6 +227,25 @@
       }
     })
   }
+  set page(
+    header: [
+    #locate(loc => {
+      let head = query(selector(heading).after(loc), loc).find(h => {
+       h.location().page() == loc.page() and h.level == 1
+      })
+      if (head != none) {
+      } else {
+        let l1h = query(selector(heading).before(loc), loc).filter(headIt => {
+          headIt.level == 1
+        })
+        let oldHead = if l1h != () {l1h.last().body} else {[]}
+        let count = counter(heading.where(level: 1)).display()
+        set align(right)
+        set text(font: "Linux Libertine")
+        smallcaps[#count #oldHead]
+      }
+    })
+  ])
 
   if abstractTitle != none {
     par(first-line-indent: 0em)[
