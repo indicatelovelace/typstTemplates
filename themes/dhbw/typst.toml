@@ -1,0 +1,15 @@
+[package]
+name = "dhbw-thesis"
+version = "0.1.0"
+compiler = "0.11.0"
+entrypoint = "config.typ"
+repository = "https://github.com/typst/templates"
+authors = ["Lennart Schuster"]
+license = "MIT-0"
+description = "Unofficial Template for DHBW"
+keywords = ["paper"]
+categories = ["computer-science", "engineering"]
+
+[template]
+path = "template"
+entrypoint = "main.typ"

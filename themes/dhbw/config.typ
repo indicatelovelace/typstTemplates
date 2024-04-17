@@ -3,10 +3,7 @@
 
 #let conf(
   title: none,
-  authors: (), /*
-   author is an array of dicts. The only key that is necessary is "name".
-  Any other property supplied is printed at the bottom end of the page, as per the guidelines, in the format "#key: #value", in the given order. For multiple authors, this data is collected, deduplicated, and either displayed as per usual or, if possible, listed as line seperated values.
-  */
+  authors: (), 
   courseName: none,
   submissionDate: datetime.today().display(), // expects content, not a datetime, so use .display()
   thesisType: none, // e.g Bachelor Thesis
@@ -85,12 +82,12 @@
     // Set size and style based on the heading level
     if (it.level == 1) {
       size = 1.5em
-      locate(loc => {
-        let levels = counter(heading).at(loc)
+      context {
+        let levels = counter(heading).get()
         if levels != (1,) {
           pagebreak(weak: true)
         }
-      })
+      }
     } else if (it.level == 2) {
       size = 1.3em
     } else if (it.level == 3) {
@@ -196,8 +193,8 @@
 
   // Prints the outline for figures with given name only if at least one item of that kind exists
   let printOutlineIfContentExists(title, kind) = {
-    locate(loc => {
-      let elems = query(figure.where(kind: kind), loc)
+    context {
+      let elems = query(figure.where(kind: kind), here())
       let count = elems.len()
       if count > 0 {
         par(first-line-indent: 0em, leading: 1em)[
@@ -208,13 +205,13 @@
           )
         ]
       }
-    })
+    }
   }
 
   // Outlines for equations
   let printOutlineIfEquationExists(title) = {
-    locate(loc => {
-      let elems = query(math.equation.where(block: true), loc)
+    context {
+      let elems = query(math.equation.where(block: true), here())
       let count = elems.len()
       if count > 0 and title != none {
         par(first-line-indent: 0em, leading: 1em)[
@@ -225,17 +222,17 @@
           )
         ]
       }
-    })
+    }
   }
   set page(
     header: [
-    #locate(loc => {
-      let head = query(selector(heading).after(loc), loc).find(h => {
-       h.location().page() == loc.page() and h.level == 1
+    #context {
+      let head = query(selector(heading).after(here())).find(h => {
+       h.location().page() == here().page() and h.level == 1
       })
       if (head != none) {
       } else {
-        let l1h = query(selector(heading).before(loc), loc).filter(headIt => {
+        let l1h = query(selector(heading).before(here())).filter(headIt => {
           headIt.level == 1
         })
         let oldHead = if l1h != () {l1h.last().body} else {[]}
@@ -244,7 +241,7 @@
         set text(font: "Linux Libertine")
         smallcaps[#count #oldHead]
       }
-    })
+    }
   ])
 
   if abstractTitle != none {
