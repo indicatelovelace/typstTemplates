@@ -1,12 +1,8 @@
 # typstTemplates
-Awesome Typst Templates, mainly for Polylux (Presentation).
-For the DHBW Ravensburg Template, look in themes and copy the whole folder.
-**Work in Progress**
-Roadmap DHBW:
-- appendix (+references)
-- new title page
-- list of symbols (optional)
+Awesome Typst Templates.
+
+## DHBW
+Use at your own risk. This template is unoffical.
+For the DHBW Ravensburg Template, look in themes and copy the whole folder. Then follow the instructions listed [here][https://github.com/typst/packages/?tab=readme-ov-file#local-packages].
 
 
-**CARE**
-Multi-Author is supported. Delete the unecessary fields of the title page in your config, as they currently produce an empty line. Authors are sorted by Name, Matriculation numbers are in that order.

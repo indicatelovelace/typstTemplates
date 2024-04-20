@@ -19,18 +19,18 @@
   })
   }
   newSec
-  locate(loc => {
-    let sec = sections.at(loc)
+  context {
+    let sec = sections.get()
     if sec.len() < 1 {
       return []
     } else {
-      return sections.at(loc).last()
+      return sections.get().last()
     }
   })
 }
 
-#let currentSectionNumber() = locate(loc => {
-    sections.at(loc).len() + 1
+#let currentSectionNumber() = context {
+    sections.get().len() + 1
   })
 
 #let _loremBullet(
@@ -42,12 +42,12 @@
   unselected: circle(radius: 5pt, fill: white, stroke: black),
   selected: circle(radius: 5pt, fill: black, stroke: black)
 ) = {
-  locate(loc => {
-    let allSecs = sections.final(loc)
-    let currentSecs = sections.at(loc)
+  context {
+    let allSecs = sections.final(here())
+    let currentSecs = sections.get()
     if currentSecs.len() > 0 {
       stack(spacing: 3pt, dir: ltr, ..allSecs.map(item =>
-        if item == sections.at(loc).last() {
+        if item == sections.get()).last() {
           selected
         } else {
           unselected
