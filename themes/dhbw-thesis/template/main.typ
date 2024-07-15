@@ -1,4 +1,5 @@
-#import "/themes/dhbw/config.typ": conf
+// #import "@local/dhbw-thesis:0.1.0": conf
+#import "@local/dhbw-thesis:0.1.0": conf
 #show: doc => conf(
   title: "Mustertitel",
 /*
@@ -18,11 +19,11 @@
   ),
   courseName: "Musterkurs",
   submissionDate: datetime.today().display(), // expects content, not a datetime, so use .display()
+  submissionPlace: "Musterort",
   thesisType: "Musterarbeit", // e.g Bachelor Thesis
   companyLogo: [], // expects any content, e.g. an image
   universityLogo: image("pics/dhbwLogo.svg"),
   university: "DHBW Ravensburg", // e.g. DHBW Ravensburg
-
   abstractTitle: none, // No abstract if none
   abstract: none,
   appendix: none, // no appendix if none
@@ -35,6 +36,8 @@
   language: "de", // enable language-specific quotes with ISO 639-1/2/3 language code
   font: "IBM Plex Serif",
   fontSize: 12pt,
+  smallcapsFont: "Linux Libertine",
+  mathFont: "IBM Plex Serif",
   outlines: ((none, none),), // e.g. (table, "List of Tables") in the submitted order
   equationTitle: none, // no equation table if none, equations are not a regular figure, only block equations are listed
   equationSupplement: none, // no eqution supplement if none
