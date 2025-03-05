@@ -11,13 +11,8 @@
       name: "Max Musterfrau",
       "Kurs, Matrikelnummer": "Musterkurs, Mustermatrikelnummer",
     ),
-    (
-      name: "Max Mustermann",
-      "Kurs, Matrikelnummer": "Musterkurs, Mustermatrikelnummer",
-      "Gutachter der DHBW:": "Prof. Max Musterprofessor"
-    ),
   ),
-  courseName: "Musterkurs",
+  courseName: "Technische Informatik",
   submissionDate: datetime.today().display(), // expects content, not a datetime, so use .display()
   submissionPlace: "Musterort",
   thesisType: "Musterarbeit", // e.g Bachelor Thesis
@@ -38,7 +33,7 @@
   fontSize: 12pt,
   smallcapsFont: "Linux Libertine",
   mathFont: "IBM Plex Serif",
-  outlines: ((none, none),), // e.g. (table, "List of Tables") in the submitted order
+  outlines: ((none, none),), // e.g. ("List of Tables", table) in the submitted order
   equationTitle: none, // no equation table if none, equations are not a regular figure, only block equations are listed
   equationSupplement: none, // no eqution supplement if none
   
